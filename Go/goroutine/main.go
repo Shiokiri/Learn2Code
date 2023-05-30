@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"goroutine/test"
+)
 
 var done = make(chan bool)
 
@@ -16,4 +19,6 @@ func main() {
 	go goroutine()
 	<- done
 	fmt.Println("Hello world!")
+
+	test.WaitGroup()
 }
