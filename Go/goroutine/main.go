@@ -21,4 +21,5 @@ func main() {
 	fmt.Println("Hello world!")
 
 	test.WaitGroup()
+	test.Mutex()
 }
