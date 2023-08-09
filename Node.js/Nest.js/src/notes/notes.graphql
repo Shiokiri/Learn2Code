@@ -1,0 +1,24 @@
+type Note {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input CreateNoteInput {
+  # Example field (placeholder)
+  exampleField: Int
+}
+
+input UpdateNoteInput {
+  id: Int!
+}
+
+type Query {
+  notes: [Note]!
+  note(id: Int!): Note
+}
+
+type Mutation {
+  createNote(createNoteInput: CreateNoteInput!): Note!
+  updateNote(updateNoteInput: UpdateNoteInput!): Note!
+  removeNote(id: Int!): Note
+}
