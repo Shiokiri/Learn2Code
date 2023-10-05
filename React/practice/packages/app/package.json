@@ -11,6 +11,8 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@trpc/client": "^10.38.5",
+    "@trpc/server": "^10.38.5",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.40",
     "@types/react": "^18.2.20",

@@ -7,7 +7,6 @@ import SignInSide from "./components/SignInSide";
 function App() {
   return (
     <>
-      <SignUp />
       <SignInSide />
     </>
   );
