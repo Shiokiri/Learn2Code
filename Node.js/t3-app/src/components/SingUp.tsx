@@ -14,6 +14,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import CopyRight from "./Copyright";
+import { appConfig } from "@/common/config";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
@@ -44,7 +45,7 @@ export default function SignUp() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            {appConfig.APP_TITLE}
           </Typography>
           <Box
             component="form"
@@ -79,7 +80,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   id="email"
-                  label="Email Address"
+                  label="邮箱地址"
                   name="email"
                   autoComplete="email"
                 />
@@ -89,7 +90,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   name="password"
-                  label="Password"
+                  label="密码"
                   type="password"
                   id="password"
                   autoComplete="new-password"
@@ -100,7 +101,7 @@ export default function SignUp() {
                   control={
                     <Checkbox value="allowExtraEmails" color="primary" />
                   }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                  label="我同意使用条款和隐私政策"
                 />
               </Grid>
             </Grid>
@@ -110,12 +111,12 @@ export default function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              注册
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign in
+                <Link href="/" variant="body2">
+                  已有账号? 登录
                 </Link>
               </Grid>
             </Grid>
