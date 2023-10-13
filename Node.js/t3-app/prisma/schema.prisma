@@ -14,15 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    @@index([name])
-}
-
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -30,14 +21,17 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? // @db.Text
+    id_token          String? @db.Text
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@unique([provider, providerAccountId])
 }
@@ -45,24 +39,31 @@ model Account {
 model Session {
     id           String   @id @default(cuid())
     sessionToken String   @unique
-    userId       String
     expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
 }
 
 model User {
-    id            String         @id @default(cuid())
+    id            String    @id @default(cuid())
     name          String?
-    email         String?        @unique
+    email         String?   @unique
     emailVerified DateTime?
     image         String?
     phone         String?
-    account       Account?
+    role          String?
+    account       Account[]
     sessions      Session[]
-    Lecturer      Lecturer?
-    Executor      Executor?
-    Student       Student?
-    Administrator Administrator?
+
+    Lecturer Lecturer?
+    Executor Executor?
+    Student  Student?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([name])
 }
 
 model VerificationToken {
@@ -81,16 +82,18 @@ model Course {
     price  Decimal
     income Decimal
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
     lecturer   Lecturer? @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
     lecturerId String?
 
     Executor   Executor? @relation(fields: [executorId], references: [id])
     executorId String?
 
-    Student Student[]
+    Student       Student[]
+    PaymentRecord PaymentRecord[]
+    Notice        Notice[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([name])
 }
@@ -122,6 +125,9 @@ model Executor {
 
     Course Course[]
 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
     @@index([name])
 }
 
@@ -137,18 +143,11 @@ model Student {
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId String @unique
 
-    Course Course[]
+    Course        Course[]
+    PaymentRecord PaymentRecord[]
 
-    @@index([name])
-}
-
-model Administrator {
-    id     String @id @default(cuid())
-    name   String
-    status String
-
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@index([name])
 }
@@ -157,4 +156,40 @@ model Notice {
     id      String @id @default(cuid())
     title   String
     content String
+
+    course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    courseId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([title])
+}
+
+model PaymentRecord {
+    id        String   @id @default(cuid())
+    payTime   DateTime
+    payAmount Decimal
+
+    student   Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+    studentId String?
+
+    course   Course? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+    courseId String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([payTime])
+}
+
+model Topic {
+    id          String @id @default(cuid())
+    name        String
+    description String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([name])
 }
