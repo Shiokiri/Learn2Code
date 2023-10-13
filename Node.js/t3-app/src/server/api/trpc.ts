@@ -15,6 +15,7 @@ import { ZodError } from "zod";
 
 import { getServerAuthSession } from "@/server/auth";
 import { db } from "@/server/db";
+import { UserRole } from "@/common/config";
 
 /**
  * 1. CONTEXT
@@ -120,6 +121,20 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+const enfoceUserRole = (userRole: UserRole) => {
+  return t.middleware(({ ctx, next }) => {
+    if (ctx.session?.user?.role !== userRole) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  });
+};
+
 /**
  * Protected (authenticated) procedure
  *
@@ -129,3 +144,15 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const adminProcedure = protectedProcedure.use(
+  enfoceUserRole(UserRole.ADMIN),
+);
+export const lecturerProcedure = protectedProcedure.use(
+  enfoceUserRole(UserRole.LECTURER),
+);
+export const excutorProcedure = protectedProcedure.use(
+  enfoceUserRole(UserRole.EXCUTOR),
+);
+export const studentProcedure = protectedProcedure.use(
+  enfoceUserRole(UserRole.STUDENT),
+);
