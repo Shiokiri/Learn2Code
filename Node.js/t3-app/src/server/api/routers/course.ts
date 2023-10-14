@@ -6,7 +6,7 @@ export const userRouter = createTRPCRouter({
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
-      return ctx.db.user.findFirst({
+      return ctx.db.course.findFirst({
         where: {
           id: input.id,
         },
@@ -14,6 +14,6 @@ export const userRouter = createTRPCRouter({
     }),
 
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.db.user.findMany();
+    return ctx.db.course.findMany();
   }),
 });
