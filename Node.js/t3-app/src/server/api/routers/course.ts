@@ -57,7 +57,7 @@ export const courseRouter = createTRPCRouter({
       });
     }),
 
-  deletebyId: publicProcedure
+  deleteById: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
       return ctx.db.course.delete({
