@@ -18,8 +18,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { mainListItems, secondaryListItems } from "./listItems";
+import { type GridColDef, type GridValueGetterParams } from "@mui/x-data-grid";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import DataTable from "./DataTable";
+import Checkout from "./Checkout";
+
+import { type Course } from "@prisma/client";
 
 function Copyright(props: any) {
   return (
@@ -92,11 +99,62 @@ const Drawer = styled(MuiDrawer, {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+const columns: GridColDef[] = [
+  { field: "id", headerName: "id", width: 70 },
+  { field: "name", headerName: "名称", width: 130 },
+  { field: "time", headerName: "时间", width: 130 },
+  { field: "place", headerName: "地点", width: 130 },
+  {
+    field: "price",
+    headerName: "价格",
+    type: "number",
+    width: 90,
+  },
+  {
+    field: "fullName",
+    headerName: "Full name",
+    description: "This column has a value getter and is not sortable.",
+    sortable: false,
+    width: 160,
+    valueGetter: (params: GridValueGetterParams) =>
+      `${params.row.name || ""} ${params.row.time || ""}`,
+  },
+];
+
+const rows = [
+  { id: 1, name: "Snow", time: "Jon", price: 35.4343, test: "test" },
+  { id: 2, name: "Lannister", time: "Cersei", price: 42 },
+  { id: 3, name: "Lannister", time: "Jaime", price: 45 },
+  { id: 4, name: "Stark", time: "Arya", price: 16 },
+  { id: 5, name: "Targaryen", time: "Daenerys", price: null },
+  { id: 6, name: "Melisandre", time: null, price: 150 },
+  { id: 7, name: "Clifford", time: "Ferrara", price: 44 },
+  { id: 8, name: "Frances", time: "Rossini", price: 36 },
+  { id: 9, name: "Roxie", time: "Harvey", price: 65 },
+  { id: 10, name: "Roxie", time: "Harvey", price: 65 },
+];
+
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const [dataTableView, setDataTableView] = React.useState(true);
+  const handleCreateButtonClick = () => {
+    setDataTableView(false);
+  };
+
+  const [courseData, setCourseData] = React.useState<Course>({
+    id: "",
+    name: "",
+    time: "",
+    place: "",
+    price: null,
+    income: null,
+    lecturerId: "",
+    executorId: "",
+  });
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -170,35 +228,45 @@ export default function Dashboard() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-              {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 240,
-                  }}
-                ></Paper>
+            {dataTableView ? (
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      display: "flex",
+                      flexDirection: "rows",
+                    }}
+                  >
+                    <Stack direction="row" spacing={2}>
+                      <Button
+                        variant="outlined"
+                        onClick={handleCreateButtonClick}
+                      >
+                        新建
+                      </Button>
+                      <Button variant="outlined">更新</Button>
+                      <Button variant="outlined" startIcon={<DeleteIcon />}>
+                        删除
+                      </Button>
+                    </Stack>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                  <Paper
+                    sx={{ p: 2, display: "flex", flexDirection: "column" }}
+                  >
+                    <DataTable rows={rows} columns={columns} />
+                  </Paper>
+                </Grid>
               </Grid>
-              {/* Recent Deposits */}
-              <Grid item xs={12} md={4} lg={3}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 240,
-                  }}
-                ></Paper>
-              </Grid>
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-                  <DataTable />
-                </Paper>
-              </Grid>
-            </Grid>
+            ) : (
+              <Checkout
+                courseData={courseData}
+                setCourseData={setCourseData}
+                setDataTableView={setDataTableView}
+              ></Checkout>
+            )}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
