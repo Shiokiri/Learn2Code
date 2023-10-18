@@ -25,7 +25,8 @@ export const executorRouter = createTRPCRouter({
         userId: z.string(),
       }),
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
+      console.log(input);
       return ctx.db.executor.create({
         data: input,
       });
@@ -40,7 +41,7 @@ export const executorRouter = createTRPCRouter({
         userId: z.string(),
       }),
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       return ctx.db.executor.update({
         where: {
           id: input.id,
@@ -51,7 +52,7 @@ export const executorRouter = createTRPCRouter({
 
   deleteById: publicProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       return ctx.db.executor.delete({
         where: {
           id: input.id,
