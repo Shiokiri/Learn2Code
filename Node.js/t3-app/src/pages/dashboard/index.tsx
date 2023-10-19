@@ -1,4 +1,4 @@
-import Dashboard from "@/components/course/Dashboard";
+import Dashboard from "@/components/Dashboard";
 
 export default function SignInPage() {
   return <Dashboard />;

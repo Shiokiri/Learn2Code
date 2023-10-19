@@ -12,11 +12,12 @@ import AddressForm from "./CouseForm";
 import Review from "./Review";
 
 import { type Course } from "@prisma/client";
+import { Page } from "../Dashboard";
 
 const Checkout: React.FC<{
   courseData: Course;
   setCourseData: React.Dispatch<React.SetStateAction<Course>>;
-  setDataTableView: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataTableView: React.Dispatch<React.SetStateAction<Page>>;
 }> = ({ courseData, setCourseData, setDataTableView }) => {
   const steps = ["录入课程信息", "确认课程信息"];
   function getStepContent(step: number) {
@@ -34,7 +35,7 @@ const Checkout: React.FC<{
 
   const [activeStep, setActiveStep] = React.useState(0);
   const handleNext = () => {
-    if (activeStep === steps.length) setDataTableView(true);
+    if (activeStep === steps.length) setDataTableView(Page.Dashboard);
     else setActiveStep(activeStep + 1);
   };
   const handleBack = () => {

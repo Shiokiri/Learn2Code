@@ -22,13 +22,16 @@ export const executorRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         status: z.string(),
-        userId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log(input);
+      if (ctx.session?.user?.id === undefined)
+        throw new Error("User is not logged in");
       return ctx.db.executor.create({
-        data: input,
+        data: {
+          ...input,
+          userId: ctx.session?.user?.id,
+        },
       });
     }),
 

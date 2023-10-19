@@ -23,12 +23,16 @@ export const lecturerRouter = createTRPCRouter({
         name: z.string(),
         profession: z.string(),
         field: z.string(),
-        userId: z.string(),
       }),
     )
     .mutation(({ ctx, input }) => {
+      if (ctx.session?.user?.id === undefined)
+        throw new Error("User is not logged in");
       return ctx.db.lecturer.create({
-        data: input,
+        data: {
+          ...input,
+          userId: ctx.session?.user?.id,
+        },
       });
     }),
 

@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useSession } from "next-auth/react";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -11,42 +12,31 @@ import List from "@mui/material/List";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "../listItems";
+import ListDashboardItems from "./ListItems";
 import { type GridColDef, type GridValueGetterParams } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { Avatar } from "@mui/material";
 
-import DataTable from "./DataTable";
-import Checkout from "./Checkout";
+import DataTable from "./course/DataTable";
+import Checkout from "./course/Checkout";
+import User from "./user/User";
+import Copyright from "./Copyright";
+import Notice from "./notice/Notice";
+import Topic from "./topic/Topic";
+import UserCheck from "./user/userCheck/UserCheck";
+import Data from "./data/Data";
+import MyCourse from "./course/myCourse/MyCourse";
 
+import { appConfig } from "../common/config";
 import { type Course } from "@prisma/client";
-
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 const drawerWidth = 240;
 
@@ -101,6 +91,7 @@ const Drawer = styled(MuiDrawer, {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
+// database
 const columns: GridColDef[] = [
   { field: "id", headerName: "id", width: 70 },
   { field: "name", headerName: "名称", width: 130 },
@@ -123,6 +114,7 @@ const columns: GridColDef[] = [
   },
 ];
 
+// database
 const rows = [
   { id: 1, name: "Snow", time: "Jon", price: 35.4343, test: "test" },
   { id: 2, name: "Lannister", time: "Cersei", price: 42 },
@@ -136,15 +128,28 @@ const rows = [
   { id: 10, name: "Roxie", time: "Harvey", price: 65 },
 ];
 
+export enum Page {
+  Dashboard,
+  MyCourse,
+  CreateCourse,
+  User,
+  UserCheck,
+  Notice,
+  Topic,
+  Data,
+}
+
 export default function Dashboard() {
+  const { data: session } = useSession();
+
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
-  const [dataTableView, setDataTableView] = React.useState(true);
+  const [page, setPage] = React.useState<Page>(Page.Dashboard);
   const handleCreateButtonClick = () => {
-    setDataTableView(false);
+    setPage(Page.CreateCourse);
   };
 
   const [courseData, setCourseData] = React.useState<Course>({
@@ -157,6 +162,59 @@ export default function Dashboard() {
     lecturerId: "",
     executorId: "",
   });
+
+  const switchPage = (page: Page) => {
+    if (page === Page.Dashboard) {
+      return (
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "rows",
+              }}
+            >
+              <Stack direction="row" spacing={2}>
+                <Button variant="outlined" onClick={handleCreateButtonClick}>
+                  新建（admin）
+                </Button>
+                <Button variant="outlined">选课（student）</Button>
+                <Button variant="outlined" startIcon={<DeleteIcon />}>
+                  删除（admin）
+                </Button>
+              </Stack>
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+              <DataTable rows={rows} columns={columns} />
+            </Paper>
+          </Grid>
+        </Grid>
+      );
+    } else if (page === Page.MyCourse) {
+      return <MyCourse />;
+    } else if (page === Page.User) {
+      return <User />;
+    } else if (page === Page.UserCheck) {
+      return <UserCheck />;
+    } else if (page === Page.CreateCourse) {
+      return (
+        <Checkout
+          courseData={courseData}
+          setCourseData={setCourseData}
+          setDataTableView={setPage}
+        ></Checkout>
+      );
+    } else if (page === Page.Notice) {
+      return <Notice />;
+    } else if (page === Page.Topic) {
+      return <Topic />;
+    } else if (page === Page.Data) {
+      return <Data />;
+    }
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -187,13 +245,9 @@ export default function Dashboard() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              {appConfig.APP_TITLE}
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={1} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <Avatar alt="User Avatar" src={session?.user.image ?? ""} />
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -211,9 +265,7 @@ export default function Dashboard() {
           </Toolbar>
           <Divider />
           <List component="nav">
-            {mainListItems}
-            <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
+            <ListDashboardItems setPage={setPage} />
           </List>
         </Drawer>
         <Box
@@ -230,45 +282,7 @@ export default function Dashboard() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            {dataTableView ? (
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Paper
-                    sx={{
-                      p: 2,
-                      display: "flex",
-                      flexDirection: "rows",
-                    }}
-                  >
-                    <Stack direction="row" spacing={2}>
-                      <Button
-                        variant="outlined"
-                        onClick={handleCreateButtonClick}
-                      >
-                        新建
-                      </Button>
-                      <Button variant="outlined">更新</Button>
-                      <Button variant="outlined" startIcon={<DeleteIcon />}>
-                        删除
-                      </Button>
-                    </Stack>
-                  </Paper>
-                </Grid>
-                <Grid item xs={12}>
-                  <Paper
-                    sx={{ p: 2, display: "flex", flexDirection: "column" }}
-                  >
-                    <DataTable rows={rows} columns={columns} />
-                  </Paper>
-                </Grid>
-              </Grid>
-            ) : (
-              <Checkout
-                courseData={courseData}
-                setCourseData={setCourseData}
-                setDataTableView={setDataTableView}
-              ></Checkout>
-            )}
+            {switchPage(page)}
             <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
