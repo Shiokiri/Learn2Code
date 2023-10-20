@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "webpack-dev-server",
     "build": "webpack build",
+    "wasm:build": "wasm-pack build --target web",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
