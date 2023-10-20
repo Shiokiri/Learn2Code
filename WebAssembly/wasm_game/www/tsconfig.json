@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "./public/",
+    "noImplicitAny": true,
+    "module": "es2020",
+    "target": "es6",
+    "allowJs": true,
+    "moduleResolution": "node"
+  }
+}

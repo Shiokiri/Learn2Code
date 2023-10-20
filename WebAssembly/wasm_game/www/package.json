@@ -13,8 +13,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wasm_game": "file:../pkg",
     "copy-webpack-plugin": "^11.0.0",
+    "ts-loader": "^9.5.0",
+    "typescript": "^5.2.2",
+    "wasm_game": "file:../pkg",
     "webpack": "^5.88.2",
     "wepack-cli": "^0.0.1-security"
   },
