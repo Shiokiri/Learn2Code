@@ -15,7 +15,7 @@
   \******************/
 /***/ (() => {
 
-eval("console.log(\"Hello World\");\r\n\n\n//# sourceURL=webpack://www/./index.js?");
+eval("async function loadWasm() {\n  const response = await fetch(\"test.wasm\");\n  const buffer = await response.arrayBuffer();\n  const wasm = WebAssembly.instantiate(buffer);\n\n  const addTwo = wasm.instance.exports.addTwo;\n  const result = addTwo(1, 2);\n\n  console.log(result)\n\n}\n\nloadWasm();\n\n\n//# sourceURL=webpack://www/./index.js?");
 
 /***/ })
 
