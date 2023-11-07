@@ -3,4 +3,4 @@ project(Design_Pattern)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(Design_Pattern main.cpp factory_method.h)
+add_executable(Design_Pattern main.cpp factory_method.h adapter.h)

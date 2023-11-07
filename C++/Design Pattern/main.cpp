@@ -1,9 +1,10 @@
 #include <iostream>
 
 #include "factory_method.h"
+#include "adapter.h"
 
 int main() {
-    factoryMethod();
-    std::cout << std::endl;
+    factory_method::test();
+    adapter::test();
     return 0;
 }
